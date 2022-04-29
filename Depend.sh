@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo start installation evil attack dependency packets...
-sudo apt update                 # ?????????
+sudo apt update                 # ????????
 sudo apt-get update             # all
 sudo apt install net-tools      # ifconfig
 # sudo pip install scapy

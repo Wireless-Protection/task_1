@@ -4,7 +4,7 @@
 
 # detect the WLAN
 """
-1. turn on monitor mode 
+1. turn on monitor mode
 2. scan
 3. display all the WI-FI
 4. let the user choose one WI-FI
