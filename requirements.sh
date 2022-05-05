@@ -7,4 +7,7 @@ sudo apt install net-tools      # ifconfig
 # sudo pip install scapy
 sudo apt install python3-scapy  # also can be use without python3
 # iwconfig ???
+
+sudo apt-get install hostapd
+sudo apt-get install dnsmasq
 echo please check there are all packets install succefully

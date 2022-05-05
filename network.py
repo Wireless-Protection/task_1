@@ -1,7 +1,7 @@
 import os
 import time
 from scapy.all import *
-from scapy.layers.dot11 import Dot11, Dot11Beacon, RadioTap, Dot11Elt
+from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt
 
 
 ssid_list = list() # need to chnge to list
@@ -44,6 +44,8 @@ def choose_net():
 def sniff_networks(pkt):
     if pkt.haslayer(Dot11Beacon):
         mac = pkt[Dot11].addr2
+        # addr1 = who hear the pkt, 2 = who send the pkt, 
+        # 3 = who the source, 4 = destination
         if mac not in [temp[1] for temp in ssid_list[0:]]:
             ssid_name = pkt[Dot11Beacon].info.decode()
             # mac address + number of the channel
@@ -52,7 +54,8 @@ def sniff_networks(pkt):
 
 
 def sniff_clients(pkt):
-    if (pkt.addr2 == mac_ssid  or pkt.addr3 == mac_ssid) and pkt.addr1 != 'ff:ff:ff:ff:ff:ff' :
+    # boadcast? ff:ff:ff:ff:ff:ff
+    if (pkt.addr2 == mac_ssid  or pkt.addr3 == mac_ssid) and pkt.addr1 != 'ff:ff:ff:ff:ff:ff':
         client_mac = pkt.addr1
         if client_mac not in client_list and client_mac != mac_ssid:
             client_list.append(client_mac)
@@ -73,16 +76,16 @@ def change_monitor(net_card: str, mode: str):
     print('\nchanging mode...')
     command_line('ifconfig ' + net_card + ' down')
     command_line('iwconfig ' + net_card + ' mode ' + mode)
-    command_line('ifconfig ' + net_card + ' up')    
+    command_line('ifconfig ' + net_card + ' up')
+    print('mode: ' + mode)
 
 
 class Network:
     def __init__(self):
         self.interface = 'wlxd03745b00a7c' #input('Insert your network card name: ')
         change_monitor(self.interface, 'monitor')
-        print('mode monitor')
 
-    def scanning_networks(self):
+    def scanning_networks(self):     # need to add the posibility to scan again
         print('\nscanning for network...')
 
         change_channel_thread = Thread(target=change_channels, args=(self.interface,))      # the ',' is must
@@ -103,14 +106,17 @@ class Network:
         elif network_to_attack == -2:
             print('not found any network')
             return 'None'
+
         ch = network_to_attack[2]
         print('changing channel to ' + ch)
         command_line('iwconfig ' + self.interface + ' ch ' + ch)
+        
         global mac_ssid
         mac_ssid = network_to_attack[1]
+        
         return mac_ssid
         
-    def scanning_clients(self):
+    def scanning_clients(self):     # need to add the posibility to scan again
         print('\nscanning for clients...')
         my_time = 15        # check the time
         try:
@@ -125,6 +131,7 @@ class Network:
         elif client_to_attack == -2:
             print('not found any clients')
             return 'None'
+
         print('\nattacking: ' + client_to_attack)
         return client_to_attack
 
@@ -133,4 +140,3 @@ class Network:
 
     def off(self):
         change_monitor(self.interface, 'managed')
-        print('mode managed')

