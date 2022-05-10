@@ -4,12 +4,59 @@ from scapy.all import *
 from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt
 
 
-ssid_list = list() # need to chnge to list
+ssid_list = list() 
 client_list = list()
 mac_ssid = ''       # global MAC address
 
 def command_line(command: str):
     return os.system(command)
+
+
+def choose_duplicate():
+    duplicate_ssid = list()
+    for i in range(len(ssid_list)):
+        j = i + 1
+        while j < len(ssid_list):
+            temp_ssid = ssid_list[i][0]
+            if temp_ssid == ssid_list[j][0]: 
+                if temp_ssid not in duplicate_ssid:
+                    duplicate_ssid.append(temp_ssid)
+            j += 1
+
+    length = len(duplicate_ssid)
+    if length > 0:
+        print('there are more than one AP with those ssid each one and cause a problem: ')
+        for i in range(length):
+            print('\t' + str(i) + ': ' + duplicate_ssid[i])
+        print('wich one you want to check their mac address? ')
+        cli = int(input(''))
+        if cli < 0 or cli > length:
+            return -1
+        else:
+            return duplicate_ssid[cli]
+    return -2
+
+
+def choose_target(target_ssid):
+    sus_mac = list()
+    for i in range(len(ssid_list)):
+        if ssid_list[i][0] == target_ssid:
+            sus_mac.append(ssid_list[i][1])
+    
+    length = len(sus_mac)
+    if length > 0:
+        print('\ncheck if you know all the mac address: ')
+        for i in range(length):
+            print('\t' + str(i) + ': ' + sus_mac[i])
+        ans = input('do you know all? [y/n] ')
+        if ans == 'y':
+            return -2
+        cli = int(input('wich one do you want to attack? '))
+        if cli < 0 or cli > length:
+            return -1
+        else:
+            return sus_mac[cli]
+    return -2
 
 
 def choose_client():
@@ -25,6 +72,7 @@ def choose_client():
         else:
             return client_list[cli]
     return -2
+
 
 def choose_net():
     length = len(ssid_list)
@@ -82,10 +130,10 @@ def change_monitor(net_card: str, mode: str):
 
 class Network:
     def __init__(self):
-        self.interface = 'wlxd03745b00a7c' #input('Insert your network card name: ')
+        self.interface = input('Insert your network card name: ')
         change_monitor(self.interface, 'monitor')
 
-    def scanning_networks(self):     # need to add the posibility to scan again
+    def scanning_networks(self, isAttck):     # need to add the posibility to scan again
         print('\nscanning for network...')
 
         change_channel_thread = Thread(target=change_channels, args=(self.interface,))      # the ',' is must
@@ -95,26 +143,42 @@ class Network:
         try:
             sniff(prn=sniff_networks, iface=self.interface, timeout=my_time)
         except:
-            print('print propper massege and check the type of the exception')
+            print('sniff network problem')
         
         change_channel_thread.join()
+        if isAttck:
+            network_to_attack = choose_net()
+            if network_to_attack == -1:
+                print('not a valid input')
+                return 'None'
+            elif network_to_attack == -2:
+                print('not found any network')
+                return 'None'
 
-        network_to_attack = choose_net()
-        if network_to_attack == -1:
+            ch = network_to_attack[2]
+            print('changing channel to ' + ch)
+            command_line('iwconfig ' + self.interface + ' ch ' + ch)
+            
+            global mac_ssid
+            mac_ssid = network_to_attack[1]
+            
+            return mac_ssid
+
+        target_ssid = choose_duplicate()
+        if target_ssid == -1:
+                print('not a valid input')
+                return 'None'
+        elif target_ssid == -2:
+            print('all good! no evil twin attack')
+            return 'None'
+        evil_mac = choose_target(target_ssid)
+        if evil_mac == -1:
             print('not a valid input')
             return 'None'
-        elif network_to_attack == -2:
+        elif evil_mac == -2:
             print('not found any network')
             return 'None'
-
-        ch = network_to_attack[2]
-        print('changing channel to ' + ch)
-        command_line('iwconfig ' + self.interface + ' ch ' + ch)
-        
-        global mac_ssid
-        mac_ssid = network_to_attack[1]
-        
-        return mac_ssid
+        return evil_mac
         
     def scanning_clients(self):     # need to add the posibility to scan again
         print('\nscanning for clients...')
