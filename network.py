@@ -139,7 +139,7 @@ class Network:
         change_channel_thread = Thread(target=change_channels, args=(self.interface,))      # the ',' is must
         change_channel_thread.start()
 
-        my_time = 15        # check the time
+        my_time = 60        # check the time
         try:
             sniff(prn=sniff_networks, iface=self.interface, timeout=my_time)
         except:
@@ -162,7 +162,7 @@ class Network:
             global mac_ssid
             mac_ssid = network_to_attack[1]
             
-            return mac_ssid
+            return network_to_attack
 
         target_ssid = choose_duplicate()
         if target_ssid == -1:
@@ -180,7 +180,7 @@ class Network:
             return 'None'
         return evil_mac
         
-    def scanning_clients(self):     # need to add the posibility to scan again
+    def scanning_clients(self):
         print('\nscanning for clients...')
         my_time = 15        # check the time
         try:

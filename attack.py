@@ -39,17 +39,17 @@ def start_attack():
     if interface == 'None':
         return -1
     # scanning for networks
-    net_mac = net_obj.scanning_networks(True)
-    if net_mac == 'None':
+    net_target = net_obj.scanning_networks(True)
+    if net_target == 'None':
         return -1
     # scanning for clients 
     client_mac = net_obj.scanning_clients()
     if client_mac == 'None':
         return -1
 
-    fake_obj = Fake(interface, net_mac, client_mac)
+    fake_obj = Fake(interface, net_target, client_mac)
     # deauthentication
-    deauthentication_packet(interface, net_mac, client_mac) # do this with thread
+    deauthentication_packet(interface, net_target[1], client_mac) # do this with thread
     # fake_ap
     fake_obj.fake_ap()
 
