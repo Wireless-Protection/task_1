@@ -1,7 +1,17 @@
 # Evil Twin attack:
 An evil twin attack is a spoofing cyberattack that works by tricking users into connecting to a fake Wi-Fi access point that mimics a legitimate network. Once a user is connected to an “evil twin” network, hackers can access everything from their network traffic to private login credentials.
 
-## How an Evil Twin Attack Works
+## Requierments:
+clone this repository:
+git clone https://github.com/Wireless-Protection/task_1.git
+
+install all the requirements by typing the command:
+sudo sh requirements.sh
+
+then:
+sudo python3 attack.py
+
+## How an Evil Twin Attack Works:
 
 The most dangerous evil twin attacks work by tricking victims into thinking that they are connecting to a reliable public Wi-Fi network. To make the attack as believable as possible, hackers typically use the following steps:
 
@@ -24,3 +34,7 @@ Once a hacker has finished setting up the evil twin access point and fake captiv
 ### Step 5: Monitoring and stealing user data
 
 Once a victim has connected their device to an “evil twin” network, the hacker can monitor everything they do online, from scrolling through social media accounts to checking bank statements. If a user logs into any of their accounts while connected to the network, the hacker can collect their login credentials. This is especially dangerous if the user uses the same credentials for multiple sensitive accounts.
+
+## Defence:
+To defence the pc from an evil twin attack we checked if the same AP name appears'
+also we checked if the mac address is different then let the user choose which AP is the suspicious one and attack it by sending deauthentication packets.
