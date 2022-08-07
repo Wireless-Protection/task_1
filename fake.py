@@ -54,12 +54,18 @@ class Fake:
             f.seek(0)
             f.write(template.substitute(INTERFACE=self.interface))
             f.truncate()
-        with open('tempFolder/script.sh', 'r+') as f:
+        with open('tempFolder/scriptOn.sh', 'r+') as f:
+            template = Template(f.read())
+            f.seek(0)
+            f.write(template.substitute(INTERFACE=self.interface, 
+                                        SECOND_INTERFACE=second_interface))
+            f.truncate()
+        with open('tempFolder/scriptOff.sh', 'r+') as f:
             template = Template(f.read())
             f.seek(0)
             f.write(template.substitute(INTERFACE=self.interface, 
                                         SECOND_INTERFACE=second_interface))
             f.truncate()
 
-        command_line('sudo sh tempFolder/script.sh')
+        command_line('sudo sh tempFolder/scriptOn.sh')
         # command_line('hostapd tempFolder/hostapd.conf')
