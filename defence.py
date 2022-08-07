@@ -35,7 +35,7 @@ def start_defence():
 
     net_obj = Network()
     interface = net_obj.get_interface()
-    client_mac = input('\nwhat is your MAC address? ')
+    # client_mac = input('\nwhat is your MAC address? ')
     if interface == 'None':
         return -1
     # scanning for networks
@@ -44,7 +44,7 @@ def start_defence():
         return -1
 
     # deauthentication
-    deauthentication_packet(interface, net_mac, client_mac) # do this with thread
+    # deauthentication_packet(interface, net_mac, client_mac) # do this with thread
 
     net_obj.off()
 
