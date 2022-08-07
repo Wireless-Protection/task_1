@@ -16,5 +16,5 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 # for checking ->
 sysctl net.ipv4.ip_forward
 
-dnsmasq -C build/dnsmasq.conf
-hostapd build/hostapd.conf -B
+dnsmasq -C dnsmasq.conf
+hostapd hostapd.conf -B

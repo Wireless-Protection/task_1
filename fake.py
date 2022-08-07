@@ -36,8 +36,12 @@ class Fake:
         prepare the environment setup for creating the fake access point
         :param access_point_bssid represent the network name
         """
+        second_interface = input('Insert your other network card name: ')
+        print("creating enviroment varible...")
+        
         command_line('rm -rf tempFolder/')
         command_line('cp -r router tempFolder')
+
         with open('tempFolder/hostapd.conf', 'r+') as f:
             template = Template(f.read())
             f.seek(0)
@@ -45,6 +49,17 @@ class Fake:
                                         SSID=self.ssid,
                                         CHANNEL=self.channel))
             f.truncate()
+        with open('tempFolder/dnsmasq.conf', 'r+') as f:
+            template = Template(f.read())
+            f.seek(0)
+            f.write(template.substitute(INTERFACE=self.interface))
+            f.truncate()
+        with open('tempFolder/script.sh', 'r+') as f:
+            template = Template(f.read())
+            f.seek(0)
+            f.write(template.substitute(INTERFACE=self.interface, 
+                                        SECOND_INTERFACE=second_interface))
+            f.truncate()
 
-        command_line('hostapd tempFolder/hostapd.conf')
-        # command_line('sudo sh tempFolder/script.sh')
+        command_line('sudo sh tempFolder/script.sh')
+        # command_line('hostapd tempFolder/hostapd.conf')

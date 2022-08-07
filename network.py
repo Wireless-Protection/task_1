@@ -8,6 +8,7 @@ ssid_list = list()
 client_list = list()
 mac_ssid = ''       # global MAC address
 
+
 def command_line(command: str):
     return os.system(command)
 
@@ -110,14 +111,10 @@ def sniff_clients(pkt):
 
 
 def change_channels(net_card):
-    nums_of_channel = 14      # need to check how channels need to scan
-    ch = 1
-    time.sleep(1)
-    # during couple minutes  
-    while ch < nums_of_channel: 
+    nums_of_channel = 14      # need to check how channels need to scan 
+    for(ch = 1; ch < nums_of_channel; ch += 1) 
         command_line('iwconfig ' + net_card + ' ch ' + str(ch))
-        ch += 1
-        time.sleep(1)
+        time.sleep(4)
 
 
 def change_monitor(net_card: str, mode: str):
@@ -182,7 +179,7 @@ class Network:
         
     def scanning_clients(self):
         print('\nscanning for clients...')
-        my_time = 15        # check the time
+        my_time = 60       # check the time
         try:
             sniff(prn=sniff_clients, iface=self.interface, timeout=my_time)
         except:
