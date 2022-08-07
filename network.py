@@ -112,9 +112,13 @@ def sniff_clients(pkt):
 
 def change_channels(net_card):
     nums_of_channel = 14      # need to check how channels need to scan 
-    for(ch = 1; ch < nums_of_channel; ch += 1) 
+    nums_of_channel = 14      # need to check how channels need to scan
+    ch = 1
+    # during couple minutes  
+    while ch < nums_of_channel: 
         command_line('iwconfig ' + net_card + ' ch ' + str(ch))
         time.sleep(4)
+        ch += 1
 
 
 def change_monitor(net_card: str, mode: str):
